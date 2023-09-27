@@ -1,0 +1,176 @@
+﻿<Window x:Class="EpiDeckClient.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"    
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+    xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+    Width="1050"
+    DataContext="{Binding Path=MainWindowViewModel, Source={StaticResource ViewModelLocator}}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d"
+    >
+
+    <b:Interaction.Triggers>
+        <b:EventTrigger EventName="Closing">
+            <b:InvokeCommandAction Command="{Binding WindowClosing}" CommandParameter="{Binding}" />
+        </b:EventTrigger>
+    </b:Interaction.Triggers>
+    
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Shadows.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+
+            <!-- data template used for the dialogs example, defines a View for a ViewModel of type DateTime -->
+            <DataTemplate DataType="{x:Type system:DateTime}">
+                <StackPanel Margin="16">
+                    <TextBlock Text="England win the World Cup:" />
+                    <TextBlock Margin="0,8,0,0" Text="{Binding}" />
+                    <TextBlock Margin="0,8,0,0" Text="You will never see that again." />
+                    <Button Margin="0,8,0,0"
+                            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                            Content="AWESOME"
+                            IsDefault="True"
+                            Style="{StaticResource MaterialDesignFlatButton}" />
+                </StackPanel>
+            </DataTemplate>
+
+            <!-- Style to remove the caption bar and based on MaterialDesignWindowStyle -->
+            <Style x:Key="NoCaptionMaterialDesignWindowStyle" TargetType="{x:Type Window}" 
+                   BasedOn="{StaticResource MaterialDesignWindow}">
+                <Setter Property="WindowChrome.WindowChrome">
+                    <Setter.Value>
+                        <WindowChrome CaptionHeight="0" 
+                                      CornerRadius="0"
+                                      GlassFrameThickness="0"
+                                      ResizeBorderThickness="4"
+                                      UseAeroCaptionButtons="False"/>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+        </ResourceDictionary>
+    </Window.Resources>
+
+    <!-- Set the style for the window -->
+    <Window.Style>
+        <StaticResource ResourceKey="NoCaptionMaterialDesignWindowStyle"/>
+    </Window.Style>
+
+
+    <materialDesign:DialogHost DialogTheme="Inherit"
+                             Identifier="RootDialog"
+                             SnackbarMessageQueue="{Binding ElementName=MainSnackbar, Path=MessageQueue}"
+                             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+
+        <materialDesign:DrawerHost>
+            <DockPanel>
+                <materialDesign:ColorZone Padding="16"
+                                      materialDesign:ElevationAssist.Elevation="Dp4"
+                                      DockPanel.Dock="Top"
+                                      Mode="PrimaryMid">
+                    <DockPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleButton x:Name="MenuToggleButton"
+                                          AutomationProperties.Name="HamburgerToggleButton"
+                                          IsChecked="False"
+                                          Style="{StaticResource MaterialDesignHamburgerToggleButton}" />
+
+                            <Button Margin="24,0,0,0"
+                                    materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}"
+                                    Command="{Binding NavigateBack}"
+                                    Content="{materialDesign:PackIcon Kind=ArrowLeft,
+                                                        Size=24}"
+                                    Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                    Style="{StaticResource MaterialDesignToolButton}"
+                                    ToolTip="Previous Item" />
+
+                            <Button Margin="16,0,0,0"
+                                    materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}"
+                                    Command="{Binding NavigateForward}"
+                                    Content="{materialDesign:PackIcon Kind=ArrowRight,
+                                                        Size=24}"
+                                    Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                    Style="{StaticResource MaterialDesignToolButton}"
+                                    ToolTip="Next Item" />
+
+                            <Button Margin="16,0,0,0"
+                                  materialDesign:RippleAssist.Feedback="{Binding RelativeSource={RelativeSource Self}, Path=Foreground, Converter={StaticResource BrushRoundConverter}}"
+                                  Command="{Binding HomeCommand}"
+                                  Content="{materialDesign:PackIcon Kind=Home, Size=24}"
+                                  Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type FrameworkElement}}, Path=(TextElement.Foreground)}"
+                                  Style="{StaticResource MaterialDesignToolButton}"
+                                  ToolTip="Home" />
+
+
+
+
+
+                        </StackPanel>
+
+                        <materialDesign:PopupBox DockPanel.Dock="Right"
+                                         PlacementMode="BottomAndAlignRightEdges"
+                                         StaysOpen="False">
+
+                            <StackPanel>
+
+                                <Button Content="Palette Picker" Command="{Binding PaletteSwitchCommand}" />
+
+                                <Button Content="Color Editor" Command="{Binding ColorToolCommand}" />
+
+                                <Separator />
+
+                                <Button Content="Exit" Click="ExitButton_OnClick" />
+                            </StackPanel>
+                        </materialDesign:PopupBox>
+
+                        <TextBlock Margin="0,0,0,0"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           AutomationProperties.Name="EpiDeck Streaming Hub"
+                           FontSize="22"
+                           Text="EpiDeck Streaming Hub" />
+
+                    </DockPanel>
+                </materialDesign:ColorZone>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+
+                    <ScrollViewer x:Name="MainScrollViewer"
+                            Grid.Row="1"
+                            materialDesign:ScrollViewerAssist.IsAutoHideEnabled="True"
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto">
+
+
+                        <mui:ModernFrame
+                            x:Name="ContentFrame"
+                            Margin="16"
+                            Source="{Binding ViewSource}" />
+
+                    </ScrollViewer>
+
+                    <materialDesign:Snackbar x:Name="MainSnackbar"
+                                             Grid.Row="1"
+                                             MessageQueue="{materialDesign:MessageQueue}" />
+
+                </Grid>
+            </DockPanel>
+        </materialDesign:DrawerHost>
+    </materialDesign:DialogHost>
+
+</Window>
+
